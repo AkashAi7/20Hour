@@ -1,6 +1,7 @@
 import os
 import openai
 import requests
+import re
 from pprint import pprint
 from prettytable import PrettyTable  # Ensure prettytable is installed
 
@@ -46,24 +47,18 @@ def extract_lessons(gpt_response):
     lessons = []
     for idx, line in enumerate(lines):
         if line.strip():
-            parts = line.split(', ')
-            if len(parts) == 3:
-                try:
-                    name = f"Lesson{idx + 1}"
-                    ttc = parts[1].split(': ')[1]
-                    lessons.append({
-                        'Lesson': name,
-                        'Description': parts[0].split(': ')[1],
-                        'Time to complete or read': f"({ttc})"
-                    })
-                except IndexError:
-                    print(f"Skipping malformed line: {line}")
-            else:
-                lessons.append({
-                    'Lesson': f"Lesson{idx + 1}",
-                    'Description': line,
-                    'Time to complete or read': ''
-                })
+            # Extract time in parentheses
+            time_match = re.search(r'\((.*?)\)', line)
+            time_to_complete = time_match.group(1) if time_match else ''
+            
+            # Remove the time part from the description
+            description = re.sub(r'\s*\(.*?\)', '', line)
+
+            lessons.append({
+                'Lesson': f"Lesson {idx + 1}",
+                'Description': description,
+                'Time to complete or read': time_to_complete
+            })
     return lessons
 
 def find_resources(lessons):
@@ -88,11 +83,13 @@ if __name__ == '__main__':
     lessons = extract_lessons(gpt_response)
     lessons_with_resources = find_resources(lessons)
 
-    # Print the table
+    # Print the table with subsections
     table = PrettyTable()
     table.field_names = ["Lesson", "Description", "Time to complete or read", "Resource URL"]
 
+    print("Basics of Learning Guitar (20-Hour Mini Course)\n")
+    
     for lesson in lessons_with_resources:
         table.add_row([lesson['Lesson'], lesson['Description'], lesson['Time to complete or read'], lesson['Resource']])
-
+    
     print(table)
