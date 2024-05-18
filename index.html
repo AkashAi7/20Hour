@@ -1,0 +1,50 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Anything in 20 Hours</title>
+</head>
+<body>
+    <h1>Welcome to Learn Anything in 20 Hours</h1>
+    <p>Enter the skill you want to learn:</p>
+    <input type="text" id="skillInput">
+    <button onclick="getLearningModules()">Get Learning Plan</button>
+    <div id="learningPlan"></div>
+
+    <script>
+        async function getLearningModules() {
+            const skill = document.getElementById('skillInput').value;
+            const apiKey = 'b8b88f45d57945faaa01e516fe7f3411'; // Your GPT API key
+            
+            // Here you would make a request to the GPT API to generate learning modules based on the skill
+            // You would also fetch relevant learning materials (e.g., YouTube videos, articles) based on the skill
+            
+            // For demonstration purposes, let's assume you have a function called generateLearningPlan()
+            const learningPlan = await generateLearningPlan(skill, apiKey);
+            
+            // Display the learning plan on the website
+            document.getElementById('learningPlan').innerHTML = learningPlan;
+        }
+
+        async function generateLearningPlan(skill, apiKey) {
+            // Here you would use the GPT API and other sources to generate a learning plan
+            // This function could involve multiple API requests and data processing
+            
+            // For demonstration purposes, let's create a simple learning plan
+            const learningPlan = `<h2>Learning Plan for ${skill}</h2>
+                                  <ol>
+                                      <li>Watch YouTube tutorial on ${skill}</li>
+                                      <li>Read article on basics of ${skill}</li>
+                                      <li>Practice ${skill} exercises for 1 hour</li>
+                                      <li>Review concepts and take notes</li>
+                                      <!-- Add more steps as needed -->
+                                  </ol>`;
+            
+            return learningPlan;
+        }
+    </script>
+</body>
+</html>
