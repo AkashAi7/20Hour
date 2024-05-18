@@ -2,6 +2,7 @@ import os
 import openai
 import requests
 from pprint import pprint
+from prettytable import PrettyTable  # Ensure prettytable is installed
 
 openai.api_type = "azure"
 openai.api_base = "https://openaiapiprojects.openai.azure.com/"
@@ -40,6 +41,41 @@ def get_gpt_response(prompt):
     )
     return response['choices'][0]['message']['content']
 
+def extract_lessons(gpt_response):
+    lines = gpt_response.strip().split('\n')
+    lessons = []
+    for idx, line in enumerate(lines):
+        if line.strip():
+            parts = line.split(', ')
+            if len(parts) == 3:
+                try:
+                    name = f"Lesson{idx + 1}"
+                    ttc = parts[1].split(': ')[1]
+                    lessons.append({
+                        'Lesson': name,
+                        'Description': parts[0].split(': ')[1],
+                        'Time to complete or read': f"({ttc})"
+                    })
+                except IndexError:
+                    print(f"Skipping malformed line: {line}")
+            else:
+                lessons.append({
+                    'Lesson': f"Lesson{idx + 1}",
+                    'Description': line,
+                    'Time to complete or read': ''
+                })
+    return lessons
+
+def find_resources(lessons):
+    for lesson in lessons:
+        query = f"{lesson['Description']} guitar lesson"
+        results = search(query)
+        if results:
+            lesson['Resource'] = results[0]['url']
+        else:
+            lesson['Resource'] = 'No resource found'
+    return lessons
+
 if __name__ == '__main__':
     # Define the prompt
     prompt = """
@@ -47,55 +83,16 @@ if __name__ == '__main__':
     major topics/time splits. Also, provide resources links, give mostly YouTube video links, in front of the topic names.
     """
 
-    # Send a query to the Bing search engine and retrieve the results
-    results = search(prompt)
+    # Use Azure OpenAI engine to generate the answer
+    gpt_response = get_gpt_response(prompt)
+    lessons = extract_lessons(gpt_response)
+    lessons_with_resources = find_resources(lessons)
 
-    results_prompts = [
-        f"Source:\nTitle: {result['name']}\nURL: {result['url']}\nContent: {result['snippet']}" for result in results
-    ]
+    # Print the table
+    table = PrettyTable()
+    table.field_names = ["Lesson", "Description", "Time to complete or read", "Resource URL"]
 
-    prompt_with_results = "Use these sources to answer the question:\n\n" + \
-        "\n\n".join(results_prompts) + "\n\nQuestion: " + prompt + "\n\nAnswer:"
+    for lesson in lessons_with_resources:
+        table.add_row([lesson['Lesson'], lesson['Description'], lesson['Time to complete or read'], lesson['Resource']])
 
-    # Check if there are any results
-    if results:
-        # Use Azure OpenAI engine to generate the answer
-        gpt_response = get_gpt_response(prompt_with_results)
-        
-        # Parse the response into a structured format
-        lines = gpt_response.strip().split('\n')
-        table_data = []
-        for line in lines:
-            if line.strip():
-                parts = line.split(', ')
-                if len(parts) == 3:
-                    try:
-                        name = parts[0].split(': ')[1]
-                        ttc = parts[1].split(': ')[1]
-                        url = parts[2].split(': ')[1]
-                        table_data.append({
-                            'Name of the module': name,
-                            'Time to complete or read': ttc,
-                            'ARTICLE url': url
-                        })
-                    except IndexError:
-                        print(f"Skipping malformed line: {line}")
-                else:
-                    table_data.append({
-                        'Name of the module': line,
-                        'Time to complete or read': '',
-                        'ARTICLE url': ''
-                    })
-
-        # Print the table
-        from prettytable import PrettyTable
-        table = PrettyTable()
-        table.field_names = ["Name of the module", "Time to complete or read", "ARTICLE url"]
-
-        for row in table_data:
-            table.add_row([row['Name of the module'], row['Time to complete or read'], row['ARTICLE url']])
-
-        print(table)
-    else:
-        # Print an error message if there are no results
-        print("Error: No results found for the given query.")
+    print(table)
