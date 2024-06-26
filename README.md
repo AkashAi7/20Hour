@@ -1,7 +1,7 @@
 # 20Hour Learning Tool - README
 
 ## Introduction
-Welcome to the 20Hour Learning Tool! This project is a Generative AI-based tool developed using Azure OpenAI, Python, and Flask. Inspired by the principle of the "20-Hour Learning Method" popularized by Josh Kaufman, this tool aims to help users quickly acquire new skills by focusing on deliberate and efficient learning practices.
+Welcome to the 20Hour Learning Tool! This project is a Generative AI-based tool developed using Azure OpenAI, Bing Search ,Python, and Flask. Inspired by the principle of the "20-Hour Learning Method" popularized by Josh Kaufman, this tool aims to help users quickly acquire new skills by focusing on deliberate and efficient learning practices.
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -10,7 +10,6 @@ Welcome to the 20Hour Learning Tool! This project is a Generative AI-based tool 
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 - **Generative AI Assistance**: Leverages Azure OpenAI to provide intelligent responses and learning guidance.
@@ -42,13 +41,15 @@ To set up the 20Hour Learning Tool on your local machine, follow these steps:
    pip install -r requirements.txt
    Configure Environment Variables:
 
-4. **Create a .env file in the project root directory and add your Azure OpenAI credentials:**
+4. **Create a .env file in the project root directory and add your Azure OpenAI credentials and Bing Search Credentials**
    env
    AZURE_OPENAI_KEY=your_openai_key
    AZURE_OPENAI_ENDPOINT=your_openai_endpoint
+   bing_search_api_key = 'your_api_key'
+   bing_search_endpoint = 'bing_search_endpoint'
 
 
-5. Run the Flask Application:
+6. Run the Flask Application:
 
    ```bash
     flask run
