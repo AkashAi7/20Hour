@@ -3,13 +3,15 @@ import openai
 import requests
 from pprint import pprint
 
-openai.api_type = "azure"
-openai.api_base = "https://openaiapiprojects.openai.azure.com/"
-openai.api_key = "0958472e98bb4a37a00529f2b718dada"
-openai.api_version = "2024-02-01"
+# Masked variables for security purposes
+penai_api_type = "azure"
+openai_api_base = "https://<masked_openai_base_url>.azure.com/"
+openai_api_key = "0958472e****dada"  # Last few characters masked
+openai_api_version = "2024-02-01"
 
-bing_search_api_key = 'b28433f3346541609601a12b830bd709'
-bing_search_endpoint = 'https://api.bing.microsoft.com/v7.0/search'
+bing_search_api_key = 'b28433f****709'  # Partial masking for security
+bing_search_endpoint = 'https://<masked_bing_search_url>.microsoft.com/v7.0/search'
+
 
 def search(query):
     # Construct a request
